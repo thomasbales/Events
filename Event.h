@@ -17,21 +17,23 @@ public:
 	//destroys callbacks vector
 	~Event();
 
-	//calls all funtion pointers
+	//calls all funtion pointers in callbacks
 	void Invoke(Args... args);
 
 	//add function to callbacks vector
 	void AddCallback(void (*newCallback)(Args...));
 
-	//remove funtion from callbacks
+	//remove function from callbacks
 	void RemoveCallback(void (*removeCallback)(Args...));
 
 	//remove all callbacks
 	void ClearCallbacks();
 
-	//overload += and -= to call subscribe/unsubscribe
+	//overload += and -= to call AddCallback and RemoveCallback
 	void operator+=(void (*newCallback)(Args...));
 	void operator-=(void (*newCallback)(Args...));
+
+	//overload () to call Invoke
 	void operator()(Args... args);
 };
 
