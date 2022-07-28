@@ -25,7 +25,8 @@ int main()
     eventWithParams.AddCallback(Func1WithParams);
     eventWithParams += Func2WithParams;
 
-    //Call Event.Invoke to call all callbacks registered to the event.
+    //Call Event.Invoke or use the () operator to call all callbacks registered
+    //to the event.
 
     int intParam = 5;
     string stringParam = "Chicken";
@@ -33,7 +34,7 @@ int main()
     cout << "Invoking events..." << endl;
 
     event.Invoke();
-    eventWithParams.Invoke(intParam, stringParam);
+    eventWithParams(intParam, stringParam);
 
     cout << endl;
 
@@ -47,7 +48,7 @@ int main()
 
     cout << "Invoking events after removing some callbacks..." << endl;
 
-    event.Invoke();
+    event();
     eventWithParams.Invoke(intParam, stringParam);
 
     cout << endl;

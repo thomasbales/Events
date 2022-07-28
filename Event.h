@@ -32,6 +32,7 @@ public:
 	//overload += and -= to call subscribe/unsubscribe
 	void operator+=(void (*newCallback)(Args...));
 	void operator-=(void (*newCallback)(Args...));
+	void operator()(Args... args);
 };
 
 template<typename... Args>
@@ -98,5 +99,11 @@ template<typename... Args>
 void Event<Args...>::operator-=(void (*removeCallback)(Args...))
 {
 	RemoveCallback(removeCallback);
+}
+
+template<typename... Args>
+void Event<Args...>::operator()(Args... args)
+{
+	Invoke(args...);
 }
 
