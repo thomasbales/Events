@@ -143,7 +143,6 @@
     <ClCompile Include="Example.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Action.h" />
     <ClInclude Include="Delegate.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="IDelegate.h" />

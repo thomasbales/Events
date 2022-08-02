@@ -29,9 +29,6 @@
     <ClInclude Include="Delegate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Action.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="IDelegate.h">
       <Filter>Header Files</Filter>
     </ClInclude>

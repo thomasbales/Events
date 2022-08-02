@@ -9,7 +9,8 @@
 using namespace std;
 
 //PURPOSE:
-//Delegate v2
+//This class wraps StaticDelegate and MemberDelegate into a class
+//that can hold either one static function or one member function.
 
 template<class ReturnType, class ...Args>
 class Delegate : public IDelegate<ReturnType, Args...>
