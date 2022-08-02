@@ -1,111 +1,111 @@
 #pragma once
 
 #include<vector>
-#include <functional>
+
 #include<string>
+#include<list>
+
+#include"Delegate.h"
 
 using namespace std;
+
+//PURPOSE:
+//This class wraps a list of Delegates and calls all of their associated functions
+//when Event.Invoke is called.
 
 template<typename... Args>
 class Event
 {
+	typedef Delegate<void, Args...> EventDelegate;
+
 	//list of funtion pointers
-	vector<void (*)(Args...)>* callbacks;
+	list<EventDelegate*>* m_pListeners;
+
 public:
-	//initializes callbacks on heap
-	Event();
-	//destroys callbacks vector
-	~Event();
+	//initializes listeners list on heap
+	Event()
+		: m_pListeners(new list<EventDelegate*>())
+	{
 
-	//calls all funtion pointers in callbacks
-	void Invoke(Args... args);
+	}
 
-	//add function to callbacks vector
-	void AddCallback(void (*newCallback)(Args...));
+	//destroys listeners list
+	~Event()
+	{
+		ClearListeners();
+
+		delete m_pListeners;
+		m_pListeners = nullptr;
+	}
+
+	//calls all funtion pointers in listeners
+	void Invoke(Args... args)
+	{
+		for (auto listener : *m_pListeners)
+		{
+			listener->Invoke(args...);
+		}
+	}
+
+	//add function to listeners list
+	void AddListener(void (*pStaticFunction)(Args...))
+	{
+		EventDelegate* pNewDelegate = new EventDelegate();
+		pNewDelegate->Bind(pStaticFunction);
+		m_pListeners->push_back(pNewDelegate);
+	}
+
+	template<class C>
+	void AddListener(C* pInstance, void (C::* pMemberFunction)(Args...))
+	{
+		EventDelegate* pNewDelegate = new EventDelegate();
+		pNewDelegate->Bind<C>(pInstance, pMemberFunction);
+		m_pListeners->push_back(pNewDelegate);
+	}
 
 	//remove function from callbacks
-	void RemoveCallback(void (*removeCallback)(Args...));
+	void RemoveListener(void (*pStaticFunction)(Args...))
+	{
+		for (auto listener = begin(*m_pListeners); listener != end(*m_pListeners); listener++) {
+			if ((*listener)->Compare(pStaticFunction))
+			{
+				delete* listener;
+				*listener = nullptr;
+				m_pListeners->erase(listener);
+				break;
+			}
+		}
+	}
+
+	template<class C>
+	void RemoveListener(C* pInstance, void (C::* pMemberFunction)(Args...))
+	{
+		for (auto listener = begin(*m_pListeners); listener != end(*m_pListeners); listener++) {
+			if ((*listener)->Compare<C>(pInstance, pMemberFunction))
+			{
+				delete* listener;
+				*listener = nullptr;
+				m_pListeners->erase(listener);
+				break;
+			}
+		}
+	}
 
 	//remove all callbacks
-	void ClearCallbacks();
-
-	//overload += and -= to call AddCallback and RemoveCallback
-	void operator+=(void (*newCallback)(Args...));
-	void operator-=(void (*newCallback)(Args...));
+	void ClearListeners()
+	{
+		while (!m_pListeners->empty())
+		{
+			delete m_pListeners->front();
+			m_pListeners->pop_front();
+		}
+	}
 
 	//overload () to call Invoke
-	void operator()(Args... args);
+	void operator()(Args... args)
+	{
+		Invoke(args...);
+	}
 };
 
-template<typename... Args>
-Event<Args...>::Event()
-	: callbacks(new vector<void (*)(Args...)>())
-{
-
-}
-
-template<typename... Args>
-Event<Args...>::~Event()
-{
-	delete callbacks;
-	callbacks = nullptr;
-}
-
-template<typename... Args>
-void Event<Args...>::Invoke(Args... args)
-{
-	for (auto callback : *callbacks)
-	{
-		callback(args...);
-	}
-}
-
-template<typename... Args>
-void Event<Args...>::AddCallback(void (*newCallback)(Args...))
-{
-	for (auto callback = begin(*callbacks); callback != end(*callbacks); ++callback) {
-		if (*callback == newCallback)
-		{
-			return;
-		}
-	}
-
-	callbacks->push_back(newCallback);
-}
-
-template<typename... Args>
-void Event<Args...>::RemoveCallback(void (*removeCallback)(Args...))
-{
-	for (auto callback = begin(*callbacks); callback != end(*callbacks); ++callback) {
-		if (*callback == removeCallback)
-		{
-			callbacks->erase(callback);
-			break;
-		}
-	}
-}
-
-template<typename... Args>
-void Event<Args...>::ClearCallbacks()
-{
-	callbacks->clear();
-}
-
-template<typename... Args>
-void Event<Args...>::operator+=(void (*newCallback)(Args...))
-{
-	AddCallback(newCallback);
-}
-
-template<typename... Args>
-void Event<Args...>::operator-=(void (*removeCallback)(Args...))
-{
-	RemoveCallback(removeCallback);
-}
-
-template<typename... Args>
-void Event<Args...>::operator()(Args... args)
-{
-	Invoke(args...);
-}
 
