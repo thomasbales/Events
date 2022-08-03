@@ -139,7 +139,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Delegate.cpp" />
     <ClCompile Include="Example.cpp" />
   </ItemGroup>
   <ItemGroup>
