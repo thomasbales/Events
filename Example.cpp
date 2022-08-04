@@ -41,7 +41,7 @@ int main()
         //instance it's attached to.
     myEvent.RemoveListener(FuncWithParams);
     myEvent.RemoveListener(testClass, &TestClass::ClassMethod);
-    
+
     //Events are implemented as a wrapper class for a list of delegates. A delegate is like a 
     //variable that can hold a single function.
         //Declare an event by specifying its return type followed by its
